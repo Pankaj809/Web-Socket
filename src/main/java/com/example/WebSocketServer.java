@@ -15,13 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerWebSocket("/server1/{username}")
 public class WebSocketServer {
 
-    private final ConcurrentHashMap<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocketSession> sessions   = new ConcurrentHashMap<>();
     private final WebSocketBroadcaster broadcaster;
     private final Gson gson;
 
     @Inject
-    public WebSocketServer(WebSocketBroadcaster broadcaster) {
-        this.broadcaster = broadcaster;
+    public WebSocketServer(WebSocketBroadcaster x) {
+        this.broadcaster = x;
         this.gson = new Gson();
     }
 
@@ -35,6 +35,11 @@ public class WebSocketServer {
     public void onMessage(String message, String username) {
         MessageObject receivedMessage = gson.fromJson(message, MessageObject.class);
         handleMessage(receivedMessage, username);
+
+//        MessageObject rcvMsg = new MessageObject();
+//        rcvMsg.setCommand(rcvMsg.getCommand());
+//        rcvMsg.setContent(rcvMsg.getContent());
+//        handleMessage(rcvMsg,username);
     }
 
     private void handleMessage(MessageObject messageObject, String username) {
@@ -52,7 +57,7 @@ public class WebSocketServer {
     }
 
     @OnClose
-    public void onClose(String username, WebSocketSession session) {
+    public void onClose(String username) {
         sessions.remove(username);
         broadcaster.broadcastSync(username + " left the chat");
     }
